@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E6B66">
+<title>أبو زياد لتصميم الدواليب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: workshop bench — controls column beside a large drawing stage you edit directly, cut list and quote below */
+:root{
+--bg:#ECEFF1; --surface:#FFFFFF; --surface-2:#F5F7F8; --ink:#18222B; --muted:#5D6975;
+--line:#D3DAE0; --accent:#0E6B66; --accent-ink:#FFFFFF; --accent-soft:#DCEFEC;
+--stage:#E3E8EB; --warn:#9A5B00; --warn-bg:#FFF3DC; --danger:#B3261E;
+--draw-line:#2A3742; --draw-fill:#F7F4EE; --draw-shelf:#D9CFBF; --draw-front:#0E6B66; --draw-dim:#6B7782;
+--shadow:0 8px 28px rgba(20,30,40,.18);
+--f-display:"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif;
+--f-body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+--f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+--r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+--bg:#11171C; --surface:#182027; --surface-2:#1E2830; --ink:#E4EAEE; --muted:#93A0AB;
+--line:#2A3641; --accent:#3DB3A8; --accent-ink:#0B1F1D; --accent-soft:#16312F;
+--stage:#0D1216; --warn:#F2B654; --warn-bg:#2E2412; --danger:#F08A80;
+--draw-line:#C9D3DA; --draw-fill:#1B242B; --draw-shelf:#3A4652; --draw-front:#3DB3A8; --draw-dim:#8896A2;
+--shadow:0 8px 28px rgba(0,0,0,.5);
+color-scheme:dark}}
+:root[data-theme="dark"]{
+--bg:#11171C; --surface:#182027; --surface-2:#1E2830; --ink:#E4EAEE; --muted:#93A0AB;
+--line:#2A3641; --accent:#3DB3A8; --accent-ink:#0B1F1D; --accent-soft:#16312F;
+--stage:#0D1216; --warn:#F2B654; --warn-bg:#2E2412; --danger:#F08A80;
+--draw-line:#C9D3DA; --draw-fill:#1B242B; --draw-shelf:#3A4652; --draw-front:#3DB3A8; --draw-dim:#8896A2;
+--shadow:0 8px 28px rgba(0,0,0,.5);
+color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.55}
+.app{max-width:1440px;margin:0 auto;padding-block:18px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:16px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:28px;margin:0;line-height:1.15;text-wrap:balance}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.projbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input,select,button{font:inherit;color:inherit}
+input[type=number],input[type=text],select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.danger{color:var(--danger)}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.layout{display:grid;grid-template-columns:minmax(300px,380px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr)}.stagecol{order:-1}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:12px;min-width:0}
+.panel h2{font-family:var(--f-display);font-weight:500;font-size:17px;margin:0}
+.controls{display:grid;gap:12px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.field{display:grid;gap:4px;min-width:0}
+.field label{font-size:12px;color:var(--muted)}
+.unit{position:relative}
+.unit input{padding-left:38px;font-variant-numeric:tabular-nums;font-family:var(--f-mono);direction:ltr;text-align:right}
+.unit span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
+.stepper{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.stepper button{border:0;background:transparent;width:32px;height:30px;cursor:pointer;font-size:16px}
+.stepper button:hover:not(:disabled){background:var(--surface-2)}
+.stepper button:disabled{opacity:.35;cursor:default}
+.stepper output{min-width:28px;text-align:center;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 10px;cursor:pointer;font-size:12.5px}
+.seg button+button{border-inline-start:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.secs{display:grid;gap:10px}
+.sec{border:1px solid var(--line);border-radius:8px;padding:10px;display:grid;gap:8px;background:var(--surface-2)}
+.sec.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;cursor:pointer;border:0;background:none;padding:0;text-align:inherit;width:100%}
+.sec-h b{font-weight:600}
+.sec-h small,.float-h small{font-family:var(--f-mono);color:var(--muted);direction:ltr}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px dashed var(--line);background:transparent;border-radius:20px;padding:2px 10px;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.switch input{width:36px;height:20px;appearance:none;background:var(--line);border-radius:20px;position:relative;cursor:pointer;margin:0}
+.switch input::after{content:"";position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--surface);transition:right .15s}
+.switch input:checked{background:var(--accent)}
+.switch input:checked::after{right:18px}
+.wbox{display:flex;align-items:center;gap:6px}
+.wbox .unit{width:110px}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--accent)}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:grid}
+.stage-bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.viewwrap{position:relative}
+.view{position:relative;height:min(66vh,620px);min-height:380px;background:var(--stage)}
+.view canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+.view svg{width:100%;height:100%;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+.hint{position:absolute;bottom:8px;inset-inline-start:10px;inset-inline-end:10px;font-size:11.5px;color:var(--muted);pointer-events:none}
+.float{position:absolute;top:10px;inset-inline-end:10px;width:min(300px,calc(100% - 20px));max-height:calc(100% - 20px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:12px;display:grid;gap:9px;z-index:3}
+@media (max-width:600px){.float{top:auto;bottom:10px;inset-inline-end:10px;max-height:62%}}
+.float-h{display:flex;align-items:center;gap:6px}
+.float-h b{font-family:var(--f-display);font-weight:500;font-size:16px}
+.ibtn{border:1px solid var(--line);background:var(--surface);border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:16px;line-height:1;display:inline-grid;place-items:center;flex:none}
+.ibtn:hover{border-color:var(--accent)}
+.float-f{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:9px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));border-top:1px solid var(--line)}
+.stat{padding:10px 12px;border-inline-start:1px solid var(--line)}
+.stat:first-child{border-inline-start:0}
+.stat span{display:block;font-size:11.5px;color:var(--muted)}
+.stat b{font-family:var(--f-mono);font-weight:500;font-size:16px;font-variant-numeric:tabular-nums}
+.stat.total b{color:var(--accent);font-size:19px}
+.warns{display:grid;gap:6px}
+.warn{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:8px 10px;font-size:13px}
+.bottom{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1100px){.bottom{grid-template-columns:minmax(0,1fr)}}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:11.5px;color:var(--muted);font-weight:600;background:var(--surface-2)}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;direction:ltr;text-align:left}
+tr.grp td{background:var(--surface-2);font-weight:600;font-size:12px;color:var(--muted)}
+tfoot td{font-weight:700;border-bottom:0}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;background:var(--accent-soft);color:var(--accent)}
+.grand{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--ink);padding-top:10px}
+.grand b{font-family:var(--f-mono);font-size:24px;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:0}
+details summary{cursor:pointer;font-weight:600}
+details[open] summary{margin-bottom:10px}
+.toast{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:20px;font-size:13px;z-index:20}
+.confirm{display:flex;gap:6px;align-items:center;font-size:12.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="app" dir="rtl">
+<header class="top">
+<div class="brand">
+<h1>أبو زياد لتصميم الدواليب</h1>
+<p>اضغط على أي قسم في الرسم وعدّله مكانه. القائمة والتسعيرة تتحدث معك مباشرة.</p>
+</div>
+<div class="projbar">
+<select id="projList" aria-label="المشاريع المحفوظة" style="width:auto;min-width:170px"></select>
+<button class="btn" id="btnSave">حفظ المشروع</button>
+<button class="btn" id="btnNew">مشروع جديد</button>
+<span id="delWrap"><button class="btn danger" id="btnDel">حذف</button></span>
+</div>
+</header>
+<div class="layout">
+<aside class="controls">
+<section class="panel">
+<h2>المشروع</h2>
+<div class="grid2">
+<div class="field"><label for="f-name">اسم المشروع</label><input type="text" id="f-name" data-k="name"></div>
+<div class="field"><label for="f-client">العميل</label><input type="text" id="f-client" data-k="client" placeholder="اسم العميل"></div>
+</div>
+</section>
+<section class="panel">
+<h2>المقاسات الخارجية</h2>
+<div class="grid3">
+<div class="field"><label for="f-W">العرض</label><div class="unit"><input type="number" id="f-W" data-k="W" step="1" min="40"><span>سم</span></div></div>
+<div class="field"><label for="f-H">الارتفاع</label><div class="unit"><input type="number" id="f-H" data-k="H" step="1" min="60"><span>سم</span></div></div>
+<div class="field"><label for="f-D">العمق</label><div class="unit"><input type="number" id="f-D" data-k="D" step="1" min="25"><span>سم</span></div></div>
+</div>
+<div class="grid3">
+<div class="field"><label for="f-t">سماكة اللوح</label><div class="unit"><input type="number" id="f-t" data-k="t" step="1" min="12"><span>مم</span></div></div>
+<div class="field"><label for="f-bt">سماكة الظهر</label><div class="unit"><input type="number" id="f-bt" data-k="bt" step="1" min="3"><span>مم</span></div></div>
+<div class="field"><label for="f-p">الوزرة</label><div class="unit"><input type="number" id="f-p" data-k="p" step="1" min="0"><span>سم</span></div></div>
+</div>
+<div class="grid2">
+<div class="field"><label for="f-drawerH">ارتفاع وجه الدرج</label><div class="unit"><input type="number" id="f-drawerH" data-k="drawerH" step="1" min="10"><span>سم</span></div></div>
+<div class="field"><label for="f-rodDrop">التعليق تحت السقف</label><div class="unit"><input type="number" id="f-rodDrop" data-k="rodDrop" step="1" min="15"><span>سم</span></div></div>
+</div>
+</section>
+<section class="panel">
+<div class="row">
+<h2>الأقسام</h2>
+<div class="stepper" aria-label="عدد الأقسام">
+<button type="button" data-act="secs-" aria-label="إنقاص">−</button>
+<output id="secCount">4</output>
+<button type="button" data-act="secs+" aria-label="زيادة">+</button>
+</div>
+</div>
+<div class="secs" id="secs"></div>
+</section>
+<section class="panel">
+<h2>الألوان</h2>
+<div class="field"><label>لون الهيكل</label><div class="swatches" id="swCarcass"></div></div>
+<div class="field"><label>لون الواجهات</label><div class="swatches" id="swFront"></div></div>
+</section>
+</aside>
+<div class="stagecol" style="display:grid;gap:16px;min-width:0">
+<section class="stage">
+<div class="stage-bar">
+<div class="seg" role="group" aria-label="طريقة العرض">
+<button type="button" data-view="3d" aria-pressed="true">ثلاثي الأبعاد</button>
+<button type="button" data-view="elev" aria-pressed="false">واجهة بالأبعاد</button>
+</div>
+<div class="row" style="gap:8px">
+<div class="seg" role="group" aria-label="الأبواب">
+<button type="button" data-doors="solid" aria-pressed="false">أبواب</button>
+<button type="button" data-doors="ghost" aria-pressed="true">شفافة</button>
+<button type="button" data-doors="hidden" aria-pressed="false">بدون</button>
+</div>
+<button class="btn" id="btnResetCam" type="button">إعادة الزاوية</button>
+</div>
+</div>
+<div class="viewwrap">
+<div class="view" id="view3d"><canvas id="cv" aria-label="عرض ثلاثي الأبعاد للدولاب"></canvas><div class="hint">اضغط على قسم لتعديله · اسحب للتدوير · عجلة الماوس أو إصبعين للتقريب</div></div>
+<div class="view" id="viewElev" hidden><div id="elevSvg" style="height:100%"></div><div class="hint">اضغط على قسم لتعديله · اسحب الفواصل لتغيير العرض · اضغط على الأبعاد لتعديلها</div></div>
+<div class="float" id="float" hidden></div>
+</div>
+<div class="stats" id="stats"></div>
+</section>
+<div class="warns" id="warns"></div>
+</div>
+</div>
+<div class="bottom">
+<section class="panel">
+<div class="row">
+<h2>قائمة التقطيع</h2>
+<button class="btn" id="btnCopyCut" type="button">نسخ للإكسل</button>
+</div>
+<div class="tablewrap"><table id="cutTable"></table></div>
+<p class="note">المقاسات بالمليمتر. الطول باتجاه العرق. الشريط = أطراف الإيدج المطلوب لصقها.</p>
+</section>
+<section class="panel">
+<h2>الكميات والتسعيرة</h2>
+<details>
+<summary>أسعار المواد (عدّلها حسب سوقك)</summary>
+<div class="grid2" id="priceFields"></div>
+</details>
+<div class="tablewrap"><table id="costTable"></table></div>
+<div class="grand"><span>الإجمالي للعميل</span><b id="grand">0</b></div>
+<button class="btn primary" id="btnCopyQuote" type="button">نسخ عرض السعر (واتساب)</button>
+<p class="note">الأسعار الافتراضية أمثلة تقريبية بالريال، غيّرها بأسعار مورّدك.</p>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fmt=(n,d=0)=>Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const APP='أبو زياد لتصميم الدواليب';
+const KEY='azeez-wardrobe-current', PKEY='azeez-wardrobe-projects';
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const CARCASS=[['أبيض','#EEEDE8'],['بيج','#E2D6C2'],['بلوط فاتح','#CDB08A'],['جوز','#7A5638'],['رمادي','#8C9196'],['أسود مطفي','#2D3033']];
+const FRONT=[['أبيض لامع','#F4F3EF'],['خشبي بلوط','#B88E5E'],['جوز داكن','#5E4129'],['أخضر زيتي','#5B6B4E'],['رمادي','#6F777E'],['كحلي','#2B3A4E']];
+const PRICE_FIELDS=[
+['board','لوح الهيكل (للوح)','ر.س'],['front','لوح الواجهات (للوح)','ر.س'],['back','لوح الظهر HDF (للوح)','ر.س'],
+['edge','شريط إيدج (للمتر)','ر.س'],['hinge','مفصلة','ر.س'],['slide','مجرى درج (زوج)','ر.س'],
+['handle','مقبض','ر.س'],['rod','عمود تعليق (للمتر)','ر.س'],['rodSup','حامل عمود','ر.س'],
+['sheetL','طول اللوح','مم'],['sheetW','عرض اللوح','مم'],['waste','نسبة الهدر','%'],
+['labor','المصنعية والتركيب','%'],['profit','هامش الربح','%'],['vat','ضريبة القيمة المضافة','%']
+];
+function defaults(){return{
+name:'دولاب غرفة النوم الرئيسية',client:'',W:240,H:240,D:60,t:18,bt:3,p:8,drawerH:20,rodDrop:32,
+sections:[{shelves:0,drawers:0,rod:true,doors:2,w:null},{shelves:5,drawers:0,rod:false,doors:1,w:null},{shelves:2,drawers:3,rod:false,doors:1,w:null},{shelves:0,drawers:0,rod:true,doors:1,w:null}],
+carcass:'#EEEDE8',front:'#B88E5E',
+prices:{board:185,front:240,back:45,edge:3,hinge:12,slide:45,handle:15,rod:25,rodSup:5,sheetL:2440,sheetW:1220,waste:15,labor:30,profit:15,vat:15}
+}}
+let S=store.get(KEY)||defaults();
+S.prices=Object.assign(defaults().prices,S.prices||{});
+let viewMode='3d', doorsMode='ghost';
+let sel=null, floatMode=null; // floatMode: 'sec' | 'dims'
+/* ---------- geometry ---------- */
+function hingeCount(h){return h<=900?2:h<=1500?3:h<=2100?4:5}
+function widths(s,W,t){
+const n=s.sections.length, inner=W-2*t-(n-1)*t;
+let fixed=0,autoN=0; s.sections.forEach(x=>{if(x.w>0)fixed+=x.w*10;else autoN++});
+let ws;
+if(autoN>0){const aw=(inner-fixed)/autoN; ws=s.sections.map(x=>x.w>0?x.w*10:aw)}
+else {const f=inner/fixed; ws=s.sections.map(x=>x.w*10*f)}
+let bad=ws.some(w=>w<100);
+if(bad) ws=s.sections.map(()=>inner/n);
+const xs=[];let acc=t; ws.forEach(w=>{xs.push(acc);acc+=w+t});
+return {ws,xs,bad};
+}
+function build(s){
+const W=s.W*10,H=s.H*10,D=s.D*10,t=s.t,bt=s.bt,p=s.p*10,dh=s.drawerH*10,drop=s.rodDrop*10;
+const n=s.sections.length;
+const {ws,xs:XS,bad}=widths(s,W,t);
+const yb=p+t, yt=H-t, Hi=yt-yb;
+const parts=[],handles=[],rods=[],warns=[];
+const hw={hinge:0,slide:0,handle:0,rodM:0,rods:0};
+if(bad) warns.push('عروض الأقسام المحددة أكبر من العرض الكلي، فتم توزيعها بالتساوي. اضغط «تلقائي» في الأقسام.');
+const add=(name,kind,mat,box,thk,eb,ebTxt,sec)=>{
+const dims=[box[3],box[4],box[5]];
+const i=dims.indexOf(Math.min(...dims)); const rest=dims.filter((_,j)=>j!==i);
+parts.push({name,kind,mat,box,thk,L:Math.round(Math.max(...rest)),Wd:Math.round(Math.min(...rest)),eb,ebTxt,sec});
+};
+add('جانب','carcass','board',[0,0,0,t,H,D],t,H,'طول واحد');
+add('جانب','carcass','board',[W-t,0,0,t,H,D],t,H,'طول واحد');
+add('سقف','carcass','board',[t,H-t,0,W-2*t,t,D],t,W-2*t,'طول واحد');
+add('قاعدة','carcass','board',[t,p,0,W-2*t,t,D],t,W-2*t,'طول واحد');
+if(p>0) add('وزرة أمامية','carcass','board',[t,0,D-t-30,W-2*t,p,t],t,W-2*t,'طول واحد');
+add('ظهر','back','back',[0,p,-bt,W,H-p,bt],bt,0,'—');
+s.sections.forEach((sec,i)=>{
+const xs=XS[i], sw=ws[i];
+if(sw<200) warns.push(`القسم ${i+1}: العرض ${fmt(sw/10,1)} سم ضيق جدًا.`);
+if(i<n-1) add('فاصل رأسي','carcass','board',[xs+sw,yb,0,t,Hi,D],t,Hi,'طول واحد',i+1);
+const k=Math.max(0,sec.drawers|0);
+let ya=yb;
+if(k>0){
+const Z=k*dh;
+if(Z>Hi-300) warns.push(`القسم ${i+1}: الأدراج أعلى من المساحة المتاحة.`);
+const bd=Math.max(250,Math.floor((D-60)/50)*50), bh=Math.max(80,dh-70), bw=sw-26;
+for(let j=0;j<k;j++){
+const y0=yb+j*dh+25+bt, z0=D-bd-4;
+add('جانب درج','box','board',[xs+13,y0,z0,t,bh,bd],t,bd,'طول واحد',i+1);
+add('جانب درج','box','board',[xs+13+bw-t,y0,z0,t,bh,bd],t,bd,'طول واحد',i+1);
+add('أمام/خلف درج','box','board',[xs+13+t,y0,z0,bw-2*t,bh,t],t,bw-2*t,'طول واحد',i+1);
+add('أمام/خلف درج','box','board',[xs+13+t,y0,D-4-t,bw-2*t,bh,t],t,bw-2*t,'طول واحد',i+1);
+add('قاع درج','box','back',[xs+13,y0-bt,z0,bw,bt,bd],bt,0,'—',i+1);
+}
+hw.slide+=k;
+add('رف فاصل فوق الأدراج','shelf','board',[xs,yb+Z,0,sw,t,D-20],t,sw,'طول واحد',i+1);
+ya=yb+Z+t;
+}
+if(sec.rod){
+const ys=yt-drop-t;
+if(ys>ya+600){
+add('رف علوي','shelf','board',[xs,ys,0,sw,t,D-20],t,sw,'طول واحد',i+1);
+rods.push({x0:xs,x1:xs+sw,y:ys-55,z:(D-20)/2});
+hw.rodM+=sw/1000; hw.rods++;
+const below=ys-ya;
+if(below<1000) warns.push(`القسم ${i+1}: ارتفاع التعليق ${fmt(below/10)} سم، قصير للملابس الطويلة.`);
+} else warns.push(`القسم ${i+1}: لا توجد مساحة كافية لعمود التعليق.`);
+} else {
+const ns=Math.max(0,sec.shelves|0), Hr=yt-ya;
+const gap=(Hr-ns*t)/(ns+1);
+if(ns>0&&gap<150) warns.push(`القسم ${i+1}: المسافة بين الرفوف ${fmt(gap/10)} سم فقط.`);
+for(let j=0;j<ns;j++) add('رف','shelf','board',[xs,ya+gap*(j+1)+t*j,0,sw,t,D-20],t,sw,'طول واحد',i+1);
+}
+const xL=i===0?0:xs-t/2, xR=i===n-1?W:xs+sw+t/2;
+const fyD=k>0?yb+k*dh+t/2:p;
+if(k>0){
+const fh=(fyD-p)/k;
+for(let j=0;j<k;j++){
+const b=[xL+1.5,p+j*fh+1.5,D,xR-xL-3,fh-3,t];
+add('وجه درج','front','front',b,t,2*(b[3]+b[4]),'4 أطراف',i+1);
+handles.push([xL+(xR-xL)/2-80,p+j*fh+fh-45,D+t,160,12,22]);
+hw.handle++;
+}
+}
+const leaves=sec.doors|0;
+if(leaves>0&&H-fyD>200){
+const lw=(xR-xL)/leaves;
+for(let l=0;l<leaves;l++){
+const b=[xL+l*lw+1.5,fyD+1.5,D,lw-3,H-fyD-3,t];
+const hinge=leaves===2?(l===0?'left':'right'):(i<n/2?'left':'right');
+add('باب','front','front',b,t,2*(b[3]+b[4]),'4 أطراف',i+1);
+parts[parts.length-1].hinge=hinge;
+hw.hinge+=hingeCount(b[4]); hw.handle++;
+const hx=hinge==='left'?b[0]+b[3]-50:b[0]+38;
+const hy=Math.min(b[1]+b[4]-200,Math.max(b[1]+200,1050));
+handles.push([hx,hy-160,D+t,12,320,22]);
+if(b[3]>650) warns.push(`القسم ${i+1}: عرض الضلفة ${fmt(b[3]/10)} سم، يفضّل ضلفتين.`);
+}
+}
+});
+const sl=s.prices.sheetL, swd=s.prices.sheetW;
+const big=parts.filter(q=>q.thk>=s.t&&(q.L>Math.max(sl,swd)||q.Wd>Math.min(sl,swd)));
+if(big.length) warns.push(`${[...new Set(big.map(q=>q.name))].join('، ')}: أطول من اللوح ${sl}×${swd}. استخدم لوح أكبر أو قسّم القطعة.`);
+return {W,H,D,t,bt,p,ws,xs:XS,yb,yt,parts,handles,rods,warns,hw};
+}
+/* ---------- costing ---------- */
+function cost(m){
+const P=S.prices, sheetA=P.sheetL*P.sheetW/1e6, wf=1+P.waste/100;
+const area={board:0,front:0,back:0}; let edge=0;
+m.parts.forEach(q=>{area[q.mat]+=q.L*q.Wd/1e6; edge+=q.eb/1000;});
+edge=Math.ceil(edge*1.1);
+const sheets=k=>area[k]>0?Math.ceil(area[k]*wf/sheetA):0;
+const lines=[
+['ألواح الهيكل',sheets('board'),'لوح',P.board,`${fmt(area.board,2)} م²`],
+['ألواح الواجهات',sheets('front'),'لوح',P.front,`${fmt(area.front,2)} م²`],
+['ألواح الظهر',sheets('back'),'لوح',P.back,`${fmt(area.back,2)} م²`],
+['شريط إيدج',edge,'م',P.edge,''],
+['مفصلات',m.hw.hinge,'حبة',P.hinge,''],
+['مجاري أدراج',m.hw.slide,'زوج',P.slide,''],
+['مقابض',m.hw.handle,'حبة',P.handle,''],
+['عمود تعليق',+m.hw.rodM.toFixed(2),'م',P.rod,''],
+['حوامل عمود',m.hw.rods*2,'حبة',P.rodSup,'']
+].filter(l=>l[1]>0).map(l=>({name:l[0],qty:l[1],unit:l[2],price:l[3],note:l[4],total:l[1]*l[3]}));
+const mat=lines.reduce((a,l)=>a+l.total,0);
+const labor=mat*P.labor/100, profit=(mat+labor)*P.profit/100, sub=mat+labor+profit, vat=sub*P.vat/100;
+return {lines,mat,labor,profit,sub,vat,total:sub+vat,area,edge};
+}
+/* ---------- fields ---------- */
+function syncFields(except){
+document.querySelectorAll('[data-k]').forEach(el=>{if(el!==except&&document.activeElement!==el)el.value=S[el.dataset.k]});
+}
+function bindFields(){
+syncFields();
+const pf=$('#priceFields'); pf.innerHTML='';
+PRICE_FIELDS.forEach(([k,l,u])=>{
+const d=document.createElement('div'); d.className='field';
+d.innerHTML=`<label for="p-${k}">${l}</label><div class="unit"><input type="number" id="p-${k}" step="any" min="0"><span>${u}</span></div>`;
+const inp=d.querySelector('input'); inp.value=S.prices[k];
+inp.addEventListener('input',()=>{S.prices[k]=parseFloat(inp.value)||0;schedule();});
+pf.appendChild(d);
+});
+swatches('#swCarcass',CARCASS,'carcass'); swatches('#swFront',FRONT,'front');
+}
+function swatches(sel,list,key){
+const el=$(sel); el.innerHTML='';
+list.forEach(([n,c])=>{
+const b=document.createElement('button'); b.type='button'; b.className='sw'; b.title=n; b.setAttribute('aria-label',n);
+b.style.background=c; b.setAttribute('aria-pressed',S[key]===c);
+b.onclick=()=>{S[key]=c; el.querySelectorAll('.sw').forEach(x=>x.setAttribute('aria-pressed',x===b)); schedule();};
+el.appendChild(b);
+});
+}
+document.addEventListener('input',e=>{
+const el=e.target;
+if(el.dataset.k){const k=el.dataset.k;S[k]=el.type==='number'?(parseFloat(el.value)||0):el.value;syncFields(el);schedule();return}
+if(el.dataset.act==='w'){
+const v=parseFloat(el.value); S.sections[+el.dataset.i].w=v>=10?v:null;
+document.querySelectorAll(`[data-act="w"][data-i="${el.dataset.i}"]`).forEach(x=>{if(x!==el)x.value=el.value});
+schedule();
+}
+});
+/* ---------- section editor (shared by side panel and on-drawing panel) ---------- */
+function secBody(i,ctx){
+const sec=S.sections[i];
+const step=(f,v,dis)=>`<div class="stepper"><button type="button" data-act="dec" data-i="${i}" data-f="${f}" aria-label="إنقاص" ${dis?'disabled':''}>−</button><output>${v}</output><button type="button" data-act="inc" data-i="${i}" data-f="${f}" aria-label="زيادة" ${dis?'disabled':''}>+</button></div>`;
+return `
+<div class="row"><label for="w-${ctx}-${i}">العرض</label><div class="wbox"><div class="unit"><input type="number" id="w-${ctx}-${i}" data-act="w" data-i="${i}" step="0.5" min="10" value="${sec.w||''}"><span>سم</span></div><button type="button" class="chip" data-act="wauto" data-i="${i}" ${sec.w?'':'hidden'}>تلقائي</button></div></div>
+<div class="chips">
+<button type="button" class="chip" data-act="preset" data-p="hang" data-i="${i}">تعليق</button>
+<button type="button" class="chip" data-act="preset" data-p="shelf" data-i="${i}">رفوف</button>
+<button type="button" class="chip" data-act="preset" data-p="drawer" data-i="${i}">أدراج + رفوف</button>
+<button type="button" class="chip" data-act="preset" data-p="hangdrawer" data-i="${i}">أدراج + تعليق</button>
+</div>
+<div class="row"><label for="rod-${ctx}-${i}">عمود تعليق</label><span class="switch"><input type="checkbox" id="rod-${ctx}-${i}" data-act="rod" data-i="${i}" ${sec.rod?'checked':''}></span></div>
+<div class="row"><span>الرفوف${sec.rod?' <small style="color:var(--muted)">(رف علوي مع التعليق)</small>':''}</span>${step('shelves',sec.rod?1:sec.shelves,sec.rod)}</div>
+<div class="row"><span>الأدراج</span>${step('drawers',sec.drawers)}</div>
+<div class="row"><span>الأبواب</span><div class="seg">
+${[['0','بدون'],['1','ضلفة'],['2','ضلفتين']].map(([v,l])=>`<button type="button" data-act="doors" data-v="${v}" data-i="${i}" aria-pressed="${sec.doors==v}">${l}</button>`).join('')}
+</div></div>`;
+}
+const secSig=()=>S.sections.map(x=>JSON.stringify({...x,w:!!x.w})).join('|');
+function updateLive(m){
+document.querySelectorAll('[data-act="w"]').forEach(el=>{
+const i=+el.dataset.i; if(!m.ws[i])return; el.placeholder=fmt(m.ws[i]/10,1);
+if(document.activeElement!==el) el.value=S.sections[i].w||'';
+});
+document.querySelectorAll('[data-act="wauto"]').forEach(el=>el.hidden=!S.sections[+el.dataset.i]?.w);
+document.querySelectorAll('[data-wlabel]').forEach(el=>{const i=+el.dataset.wlabel;if(m.ws[i])el.textContent=fmt(m.ws[i]/10,1)+' cm'});
+}
+function renderSections(m){
+$('#secCount').textContent=S.sections.length;
+const box=$('#secs'), sig=secSig();
+if(box.dataset.sig!==sig){
+box.dataset.sig=sig; box.innerHTML='';
+S.sections.forEach((sec,i)=>{
+const d=document.createElement('div'); d.className='sec'; d.dataset.card=i;
+d.innerHTML=`<button type="button" class="sec-h" data-act="sel" data-i="${i}"><b>القسم ${i+1}</b><small data-wlabel="${i}"></small></button>`+secBody(i,'p');
+box.appendChild(d);
+});
+}
+box.querySelectorAll('.sec').forEach(c=>c.classList.toggle('sel',+c.dataset.card===sel));
+}
+function renderFloat(m){
+const f=$('#float');
+if(!floatMode){f.hidden=true;f.dataset.sig='';return}
+f.hidden=false;
+const sig=floatMode+'|'+sel+'|'+secSig()+'|'+S.sections.length;
+if(f.dataset.sig===sig) return;
+f.dataset.sig=sig;
+if(floatMode==='dims'){
+const fld=(k,l,u)=>`<div class="field"><label for="fl-${k}">${l}</label><div class="unit"><input type="number" id="fl-${k}" data-k="${k}" step="1" value="${S[k]}"><span>${u}</span></div></div>`;
+f.innerHTML=`<div class="float-h"><b>المقاسات الخارجية</b><span style="flex:1"></span><button type="button" class="ibtn" data-act="close" aria-label="إغلاق">×</button></div>
+<div class="grid3">${fld('W','العرض','سم')}${fld('H','الارتفاع','سم')}${fld('D','العمق','سم')}</div>
+<div class="grid3">${fld('p','الوزرة','سم')}${fld('t','اللوح','مم')}${fld('drawerH','الدرج','سم')}</div>`;
+} else {
+const n=S.sections.length;
+f.innerHTML=`<div class="float-h">
+<button type="button" class="ibtn" data-act="prev" aria-label="القسم السابق" ${sel===0?'disabled':''}>›</button>
+<b>القسم ${sel+1}</b><small data-wlabel="${sel}"></small>
+<button type="button" class="ibtn" data-act="next" aria-label="القسم التالي" ${sel===n-1?'disabled':''}>‹</button>
+<span style="flex:1"></span><button type="button" class="ibtn" data-act="close" aria-label="إغلاق">×</button></div>
+${secBody(sel,'f')}
+<div class="float-f"><button type="button" class="btn sm" data-act="secdup">تكرار القسم</button><button type="button" class="btn sm danger" data-act="secdel" ${n<2?'disabled':''}>حذف القسم</button></div>`;
+}
+}
+function select(i){
+if(i==null){sel=null;floatMode=null}
+else {sel=i;floatMode='sec'}
+schedule();
+}
+document.addEventListener('click',e=>{
+const b=e.target.closest('[data-act]'); if(!b||b.disabled) return;
+const a=b.dataset.act, i=+b.dataset.i, sec=S.sections[i], n=S.sections.length;
+if(a==='secs+'&&n<8) S.sections.push({...S.sections[n-1],w:null});
+else if(a==='secs-'&&n>1) S.sections.pop();
+else if(a==='inc') sec[b.dataset.f]=Math.min(12,(sec[b.dataset.f]|0)+1);
+else if(a==='dec') sec[b.dataset.f]=Math.max(0,(sec[b.dataset.f]|0)-1);
+else if(a==='doors') sec.doors=+b.dataset.v;
+else if(a==='wauto') sec.w=null;
+else if(a==='sel'){ if(sel===i&&floatMode==='sec'){select(null)} else select(i); return }
+else if(a==='close'){select(null);return}
+else if(a==='prev'&&sel>0) sel--;
+else if(a==='next'&&sel<n-1) sel++;
+else if(a==='secdup'&&n<8){S.sections.splice(sel+1,0,{...S.sections[sel],w:null});sel++}
+else if(a==='secdel'&&n>1){S.sections.splice(sel,1);sel=Math.min(sel,S.sections.length-1)}
+else if(a==='preset'){
+const pr={hang:{rod:true,shelves:0,drawers:0},shelf:{rod:false,shelves:5,drawers:0},drawer:{rod:false,shelves:2,drawers:3},hangdrawer:{rod:true,shelves:0,drawers:2}}[b.dataset.p];
+Object.assign(sec,pr);
+} else return;
+schedule();
+});
+document.addEventListener('change',e=>{
+const b=e.target.closest('[data-act="rod"]'); if(!b) return;
+S.sections[+b.dataset.i].rod=b.checked; schedule();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&floatMode)select(null)});
+/* ---------- elevation SVG (interactive) ---------- */
+function elevation(m){
+const {W,H,t}=m, pad=Math.max(W,H)*0.11, fs=Math.max(W,H)/48;
+const Y=(y,sy)=>H-y-sy;
+let g='';
+const rect=(b,cls)=>`<rect x="${b[0]}" y="${Y(b[1],b[4])}" width="${b[3]}" height="${b[4]}" class="${cls}"/>`;
+g+=`<rect x="0" y="0" width="${W}" height="${H-m.p}" class="bk"/>`;
+if(sel!=null&&m.ws[sel]) g+=`<rect x="${m.xs[sel]}" y="${t}" width="${m.ws[sel]}" height="${H-m.p-2*t}" class="selbg"/>`;
+m.parts.forEach(q=>{
+if(q.kind==='carcass') g+=rect(q.box,'cc');
+else if(q.kind==='shelf') g+=rect(q.box,'sh');
+});
+m.rods.forEach(r=>{g+=`<line x1="${r.x0+20}" x2="${r.x1-20}" y1="${H-r.y}" y2="${H-r.y}" class="rod"/><circle cx="${r.x0+20}" cy="${H-r.y}" r="${fs*0.35}" class="rodc"/><circle cx="${r.x1-20}" cy="${H-r.y}" r="${fs*0.35}" class="rodc"/>`});
+if(doorsMode==='hidden'){
+m.parts.filter(q=>q.name==='أمام/خلف درج'&&q.box[2]>m.D/2).forEach(q=>g+=rect([q.box[0]-t,q.box[1],0,q.box[3]+2*t,q.box[4]],'dbox'));
+} else {
+m.parts.filter(q=>q.kind==='front').forEach(q=>{
+const b=q.box; g+=rect(b,'fr');
+if(q.hinge){
+const x0=b[0],x1=b[0]+b[3],y0=Y(b[1],b[4]),y1=y0+b[4];
+const hx=q.hinge==='left'?x0:x1, ox=q.hinge==='left'?x1:x0;
+g+=`<polyline points="${hx},${y0} ${ox},${(y0+y1)/2} ${hx},${y1}" class="swing"/>`;
+}
+});
+m.handles.forEach(h=>g+=`<rect x="${h[0]}" y="${Y(h[1],h[4])}" width="${h[3]}" height="${h[4]}" class="hd"/>`);
+}
+// click targets for sections
+m.ws.forEach((w,i)=>{g+=`<rect x="${m.xs[i]}" y="0" width="${w}" height="${H}" class="hit" data-sec="${i}"><title>القسم ${i+1}</title></rect>`});
+if(sel!=null&&m.ws[sel]) g+=`<rect x="${m.xs[sel]}" y="${t}" width="${m.ws[sel]}" height="${H-m.p-2*t}" class="selline"/>`;
+// draggable dividers
+const hwid=Math.max(t*3,fs*1.4);
+for(let i=0;i<m.ws.length-1;i++){
+const cx=m.xs[i]+m.ws[i]+t/2;
+g+=`<g class="divh" data-div="${i}"><rect x="${cx-hwid/2}" y="${t}" width="${hwid}" height="${H-m.p-2*t}" class="divhit"/><rect x="${cx-fs*0.35}" y="${(H-m.p)/2-fs*1.6}" width="${fs*0.7}" height="${fs*3.2}" rx="${fs*0.35}" class="grip"/></g>`;
+}
+// dimensions
+const tick=fs*0.4;
+const dimH=(x0,x1,y,label,key)=>`<g ${key?`class="dimg" data-dim="${key}"`:''}><line x1="${x0}" x2="${x1}" y1="${y}" y2="${y}" class="dm"/><line x1="${x0}" x2="${x0}" y1="${y-tick}" y2="${y+tick}" class="dm"/><line x1="${x1}" x2="${x1}" y1="${y-tick}" y2="${y+tick}" class="dm"/>${key?`<rect x="${x0}" y="${y-fs*1.8}" width="${x1-x0}" height="${fs*2.4}" class="dimhit"/>`:''}<text x="${(x0+x1)/2}" y="${y-fs*0.45}" class="dt">${label}</text></g>`;
+g+=dimH(0,W,-pad*0.5,fmt(W/10,1)+' سم','W');
+m.ws.forEach((w,i)=>{g+=dimH(m.xs[i],m.xs[i]+w,H+pad*0.45,fmt(w/10,1))});
+const xv=-pad*0.5;
+g+=`<g class="dimg" data-dim="H"><rect x="${xv-fs*1.8}" y="0" width="${fs*2.4}" height="${H}" class="dimhit"/><line x1="${xv}" x2="${xv}" y1="0" y2="${H}" class="dm"/><line x1="${xv-tick}" x2="${xv+tick}" y1="0" y2="0" class="dm"/><line x1="${xv-tick}" x2="${xv+tick}" y1="${H}" y2="${H}" class="dm"/><text transform="translate(${xv-fs*0.5},${H/2}) rotate(-90)" class="dt">${fmt(H/10,1)} سم</text></g>`;
+return `<svg viewBox="${-pad} ${-pad} ${W+2*pad} ${H+2*pad}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="واجهة الدولاب بالأبعاد">
+<style>
+.bk{fill:var(--draw-fill);stroke:none}
+.selbg{fill:var(--accent);fill-opacity:.09}
+.selline{fill:none;stroke:var(--accent);stroke-width:${fs*0.16};pointer-events:none}
+.cc{fill:var(--draw-shelf);stroke:var(--draw-line);stroke-width:${fs*0.08}}
+.sh{fill:var(--draw-shelf);stroke:var(--draw-line);stroke-width:${fs*0.06}}
+.rod{stroke:var(--draw-line);stroke-width:${fs*0.22};stroke-linecap:round}
+.rodc{fill:var(--draw-line)}
+.dbox{fill:none;stroke:var(--draw-line);stroke-width:${fs*0.06};stroke-dasharray:${fs*0.4} ${fs*0.25}}
+.fr{fill:var(--draw-front);fill-opacity:${doorsMode==='solid'?0.55:0.10};stroke:var(--draw-front);stroke-width:${fs*0.09}}
+.swing{fill:none;stroke:var(--draw-front);stroke-width:${fs*0.06};stroke-dasharray:${fs*0.5} ${fs*0.3}}
+.hd{fill:var(--draw-line)}
+.hit{fill:transparent;cursor:pointer}
+.hit:hover{fill:var(--accent);fill-opacity:.05}
+.divh{cursor:ew-resize}
+.divhit{fill:transparent}
+.grip{fill:var(--surface);stroke:var(--accent);stroke-width:${fs*0.1};opacity:.85}
+.divh:hover .grip{fill:var(--accent);opacity:1}
+.dimg{cursor:pointer}
+.dimhit{fill:transparent}
+.dimg:hover .dt{fill:var(--accent)}
+.dm{stroke:var(--draw-dim);stroke-width:${fs*0.06}}
+.dt{fill:var(--draw-dim);font-family:var(--f-mono);font-size:${fs}px;text-anchor:middle}
+</style>${g}</svg>`;
+}
+(function elevInteract(){
+const host=$('#viewElev');
+let drag=null, down=null;
+const svgX=e=>{const s=host.querySelector('svg');const pt=s.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(s.getScreenCTM().inverse()).x};
+host.addEventListener('pointerdown',e=>{
+if(e.button>0)return;
+const dv=e.target.closest('[data-div]');
+down={x:e.clientX,y:e.clientY,target:e.target};
+if(dv&&window.__m){
+const i=+dv.dataset.div, m=window.__m;
+drag={i,left:m.xs[i],right:m.xs[i+1]+m.ws[i+1],t:m.t};
+host.setPointerCapture(e.pointerId); e.preventDefault();
+}
+});
+host.addEventListener('pointermove',e=>{
+if(!drag)return;
+const x=svgX(e), {i,left,right,t}=drag;
+let lw=x-t/2-left, rw=right-(x+t/2);
+const min=200; if(lw<min){rw-=min-lw;lw=min} if(rw<min){lw-=min-rw;rw=min}
+S.sections[i].w=Math.round(lw/5)/2; S.sections[i+1].w=Math.round(rw/5)/2;
+schedule();
+});
+host.addEventListener('pointerup',e=>{
+if(drag){drag=null;return}
+if(!down)return;
+const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y)>6, tg=down.target; down=null;
+if(moved)return;
+const sec=tg.closest&&tg.closest('[data-sec]'), dim=tg.closest&&tg.closest('[data-dim]');
+if(dim){sel=null;floatMode='dims';schedule()}
+else if(sec) select(+sec.dataset.sec);
+else select(null);
+});
+host.addEventListener('pointercancel',()=>{drag=null;down=null});
+})();
+/* ---------- 3D ---------- */
+let T=null;
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function init3D(){
+if(!window.THREE){$('#view3d').innerHTML='<div class="hint" style="position:static;padding:20px">تعذّر تحميل العرض ثلاثي الأبعاد. استخدم «واجهة بالأبعاد».</div>';return}
+const cv=$('#cv');
+const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+const scene=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(32,1,0.05,100);
+scene.add(new THREE.HemisphereLight(0xffffff,0x667788,0.75));
+const dl=new THREE.DirectionalLight(0xffffff,0.75); dl.position.set(-2.5,4,4); scene.add(dl);
+const dl2=new THREE.DirectionalLight(0xffffff,0.25); dl2.position.set(3,1,-2); scene.add(dl2);
+const group=new THREE.Group(); scene.add(group);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(4,48),new THREE.MeshBasicMaterial({color:0xcccccc,transparent:true,opacity:0.35}));
+floor.rotation.x=-Math.PI/2; floor.position.y=-0.001; scene.add(floor);
+T={renderer,scene,cam,group,floor,theta:-0.55,phi:1.32,r:5,target:new THREE.Vector3(0,1.2,0),ray:new THREE.Raycaster()};
+new ResizeObserver(()=>resize3D()).observe($('#view3d'));
+const ptrs=new Map(); let lastD=0, down=null;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptrs.size===1)down={x:e.clientX,y:e.clientY};else down=null;cv.style.cursor='grabbing'});
+cv.addEventListener('pointermove',e=>{
+if(!ptrs.has(e.pointerId))return;
+const prev=ptrs.get(e.pointerId); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+if(ptrs.size===1){T.theta-=(e.clientX-prev.x)*0.008;T.phi=Math.min(Math.PI/2-0.02,Math.max(0.2,T.phi-(e.clientY-prev.y)*0.008));}
+else if(ptrs.size===2){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(lastD)T.r=Math.min(15,Math.max(1,T.r*lastD/d));lastD=d;}
+render3D();
+});
+const up=e=>{
+ptrs.delete(e.pointerId);lastD=0;cv.style.cursor='grab';
+if(e.type==='pointerup'&&down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)<6) pick(e);
+down=null;
+};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',e=>{e.preventDefault();T.r=Math.min(15,Math.max(1,T.r*(e.deltaY>0?1.08:0.93)));render3D()},{passive:false});
+}
+function pick(e){
+const m=window.__m; if(!m||!T)return;
+const r=$('#cv').getBoundingClientRect();
+const v=new THREE.Vector2(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+T.ray.setFromCamera(v,T.cam);
+const hits=T.ray.intersectObjects(T.group.children.filter(o=>o.isMesh&&!o.userData.noPick),false);
+if(!hits.length){select(null);return}
+const x=hits[0].point.x/0.001+m.W/2;
+let best=null;
+m.ws.forEach((w,i)=>{if(x>=m.xs[i]-m.t/2&&x<=m.xs[i]+w+m.t/2)best=i});
+if(best==null) best=x<m.W/2?0:m.ws.length-1;
+select(best);
+}
+function resize3D(){
+if(!T)return; const v=$('#view3d'); const w=v.clientWidth,h=v.clientHeight; if(!w||!h)return;
+T.renderer.setSize(w,h,false); T.cam.aspect=w/h; T.cam.updateProjectionMatrix(); render3D();
+}
+function resetCam(m){if(!T)return;T.theta=-0.55;T.phi=1.32;T.r=Math.max(m.W,m.H)/1000*2.1+1;T.target.set(0,m.H/2000,0);render3D()}
+function render3D(){
+if(!T)return;
+const {cam,r,phi,theta,target}=T;
+cam.position.set(target.x+r*Math.sin(phi)*Math.sin(theta),target.y+r*Math.cos(phi),target.z+r*Math.sin(phi)*Math.cos(theta));
+cam.lookAt(target);
+T.renderer.setClearColor(new THREE.Color(css('--stage')||'#e3e8eb'));
+T.floor.material.color.set(css('--line')||'#cccccc');
+T.renderer.render(T.scene,cam);
+}
+function shade(hex,f){const c=new THREE.Color(hex);c.multiplyScalar(f);return c}
+let firstBuild=true;
+function build3D(m){
+if(!T)return;
+const g=T.group;
+while(g.children.length){const c=g.children.pop();c.geometry&&c.geometry.dispose();c.material&&c.material.dispose()}
+const k=0.001, ox=-m.W/2, oz=-m.D/2;
+const lineCol=new THREE.Color(css('--draw-line')||'#2a3742');
+const mats={
+carcass:()=>new THREE.MeshStandardMaterial({color:S.carcass,roughness:0.85}),
+shelf:()=>new THREE.MeshStandardMaterial({color:shade(S.carcass,0.97),roughness:0.85}),
+box:()=>new THREE.MeshStandardMaterial({color:shade(S.carcass,0.92),roughness:0.85}),
+back:()=>new THREE.MeshStandardMaterial({color:shade(S.carcass,0.8),roughness:0.9}),
+front:()=>new THREE.MeshStandardMaterial({color:S.front,roughness:0.6,transparent:doorsMode==='ghost',opacity:doorsMode==='ghost'?0.22:1,depthWrite:doorsMode!=='ghost'})
+};
+const addBox=(b,mat,edges=true,eOp=0.35,col=lineCol)=>{
+const geo=new THREE.BoxGeometry(b[3]*k,b[4]*k,b[5]*k);
+const mesh=new THREE.Mesh(geo,mat);
+mesh.position.set((ox+b[0]+b[3]/2)*k,(b[1]+b[4]/2)*k,(oz+b[2]+b[5]/2)*k);
+g.add(mesh);
+if(edges){const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:eOp}));e.position.copy(mesh.position);g.add(e)}
+return mesh;
+};
+m.parts.forEach(q=>{
+if(q.kind==='front'&&doorsMode==='hidden')return;
+addBox(q.box,mats[q.kind](),true,q.kind==='front'&&doorsMode==='ghost'?0.6:0.3);
+});
+if(doorsMode!=='hidden'){const hm=new THREE.MeshStandardMaterial({color:0x8d949b,metalness:0.6,roughness:0.35});m.handles.forEach(h=>addBox(h,hm,false))}
+const rm=new THREE.MeshStandardMaterial({color:0xa9b0b7,metalness:0.7,roughness:0.3});
+m.rods.forEach(r=>{
+const geo=new THREE.CylinderGeometry(0.0125,0.0125,(r.x1-r.x0-20)*k,16);
+const c=new THREE.Mesh(geo,rm); c.rotation.z=Math.PI/2;
+c.position.set((ox+(r.x0+r.x1)/2)*k,r.y*k,(oz+r.z)*k); g.add(c);
+});
+if(sel!=null&&m.ws[sel]){
+const ac=new THREE.Color(css('--accent')||'#0e6b66');
+const hl=addBox([m.xs[sel],m.p+m.t,0,m.ws[sel],m.H-m.p-2*m.t,m.D+m.t+2],new THREE.MeshBasicMaterial({color:ac,transparent:true,opacity:0.1,depthWrite:false}),true,1,ac);
+hl.userData.noPick=true;
+}
+if(firstBuild){resetCam(m);firstBuild=false}else render3D();
+}
+/* ---------- tables ---------- */
+const MAT_LABEL={board:'هيكل',front:'واجهة',back:'HDF'};
+function groupParts(parts){
+const map=new Map();
+parts.forEach(q=>{const key=[q.mat,q.name,q.L,q.Wd,q.thk,q.ebTxt].join('|');
+if(!map.has(key))map.set(key,{...q,qty:0});map.get(key).qty++});
+const order={board:0,front:1,back:2};
+return [...map.values()].sort((a,b)=>order[a.mat]-order[b.mat]||b.L-a.L);
+}
+let lastRows=[];
+function renderCut(m){
+const rows=groupParts(m.parts); lastRows=rows;
+let h='<thead><tr><th>#</th><th>القطعة</th><th>العدد</th><th>الطول</th><th>العرض</th><th>السماكة</th><th>الشريط</th></tr></thead><tbody>';
+let cur='',idx=0;
+rows.forEach(r=>{
+if(r.mat!==cur){cur=r.mat;h+=`<tr class="grp"><td colspan="7">${{board:'ألواح الهيكل والأدراج',front:'الواجهات (أبواب ووجوه أدراج)',back:'الظهر وقيعان الأدراج'}[cur]}</td></tr>`}
+h+=`<tr><td class="n">${++idx}</td><td>${r.name}</td><td class="n">${r.qty}</td><td class="n">${r.L}</td><td class="n">${r.Wd}</td><td class="n">${r.thk}</td><td>${r.ebTxt}</td></tr>`;
+});
+const pcs=rows.reduce((a,r)=>a+r.qty,0);
+h+=`</tbody><tfoot><tr><td></td><td>المجموع</td><td class="n">${pcs}</td><td colspan="4"></td></tr></tfoot>`;
+$('#cutTable').innerHTML=h;
+}
+let lastCost=null;
+function renderCost(c){
+lastCost=c;
+let h='<thead><tr><th>البند</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>';
+c.lines.forEach(l=>h+=`<tr><td>${l.name}${l.note?` <span class="tag">${l.note}</span>`:''}</td><td class="n">${fmt(l.qty,l.unit==='م'&&l.qty%1?2:0)} ${l.unit}</td><td class="n">${fmt(l.price)}</td><td class="n">${fmt(l.total)}</td></tr>`);
+const P=S.prices;
+h+=`<tr class="grp"><td>إجمالي المواد</td><td></td><td></td><td class="n">${fmt(c.mat)}</td></tr>`;
+h+=`<tr><td>المصنعية والتركيب ${P.labor}%</td><td></td><td></td><td class="n">${fmt(c.labor)}</td></tr>`;
+h+=`<tr><td>هامش الربح ${P.profit}%</td><td></td><td></td><td class="n">${fmt(c.profit)}</td></tr>`;
+h+=`<tr><td>ضريبة القيمة المضافة ${P.vat}%</td><td></td><td></td><td class="n">${fmt(c.vat)}</td></tr></tbody>`;
+$('#costTable').innerHTML=h;
+$('#grand').textContent=fmt(c.total)+' ر.س';
+}
+function renderStats(m,c){
+const fronts=m.parts.filter(q=>q.name==='باب').length;
+const sheetsN=n=>c.lines.find(l=>l.name===n)?.qty||0;
+const items=[['المقاس الخارجي',`${fmt(S.W)}×${fmt(S.H)}×${fmt(S.D)}`],['عدد القطع',m.parts.length],['الضلف / الأدراج',`${fronts} / ${m.hw.slide}`],['ألواح (هيكل+واجهات)',sheetsN('ألواح الهيكل')+sheetsN('ألواح الواجهات')]];
+$('#stats').innerHTML=items.map(([a,b])=>`<div class="stat"><span>${a}</span><b>${b}</b></div>`).join('')+`<div class="stat total"><span>السعر النهائي</span><b>${fmt(c.total)} ر.س</b></div>`;
+}
+/* ---------- main render ---------- */
+let raf=0,saveT=0;
+function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(renderAll);clearTimeout(saveT);saveT=setTimeout(()=>store.set(KEY,S),400)}
+function renderAll(){
+if(sel!=null&&sel>=S.sections.length) sel=S.sections.length-1;
+const m=build(S), c=cost(m);
+window.__m=m;
+renderSections(m); renderFloat(m); updateLive(m);
+$('#elevSvg').innerHTML=elevation(m);
+build3D(m);
+renderCut(m); renderCost(c); renderStats(m,c);
+$('#warns').innerHTML=m.warns.map(w=>`<div class="warn">${w}</div>`).join('');
+}
+/* ---------- toolbar ---------- */
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{
+viewMode=b.dataset.view;
+document.querySelectorAll('[data-view]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+$('#view3d').hidden=viewMode!=='3d'; $('#viewElev').hidden=viewMode!=='elev';
+$('#btnResetCam').hidden=viewMode!=='3d';
+if(viewMode==='3d')resize3D();
+});
+document.querySelectorAll('[data-doors]').forEach(b=>b.onclick=()=>{
+doorsMode=b.dataset.doors;
+document.querySelectorAll('[data-doors]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+schedule();
+});
+$('#btnResetCam').onclick=()=>window.__m&&resetCam(window.__m);
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+async function copy(text,done){
+try{await navigator.clipboard.writeText(text);toast(done)}
+catch(e){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast(done)}catch(_){toast('انسخ النص يدويًا')}ta.remove()}
+}
+$('#btnCopyCut').onclick=()=>{
+const head=['القطعة','العدد','الطول مم','العرض مم','السماكة مم','المادة','الشريط'];
+const body=lastRows.map(r=>[r.name,r.qty,r.L,r.Wd,r.thk,MAT_LABEL[r.mat],r.ebTxt].join('\t'));
+copy([head.join('\t'),...body].join('\n'),'تم نسخ قائمة التقطيع. الصقها في إكسل.');
+};
+$('#btnCopyQuote').onclick=()=>{
+const c=lastCost,m=window.__m; if(!c)return;
+const t=[`*${APP}*`,`عرض سعر: ${S.name}`,S.client?`العميل: ${S.client}`:'',`المقاس: عرض ${S.W} × ارتفاع ${S.H} × عمق ${S.D} سم`,
+`عدد الأقسام: ${S.sections.length} · ضلف: ${m.parts.filter(q=>q.name==='باب').length} · أدراج: ${m.hw.slide}`,'',
+...c.lines.map(l=>`- ${l.name}: ${fmt(l.qty,l.unit==='م'&&l.qty%1?2:0)} ${l.unit}`),'',
+`المجموع قبل الضريبة: ${fmt(c.sub)} ر.س`,`الضريبة ${S.prices.vat}%: ${fmt(c.vat)} ر.س`,`*الإجمالي: ${fmt(c.total)} ر.س*`].filter((x,i,a)=>x!==''||(i>0&&a[i-1]!==''));
+copy(t.join('\n'),'تم نسخ عرض السعر');
+};
+/* ---------- projects ---------- */
+function projects(){return store.get(PKEY)||{}}
+function fillProjects(selName){
+const p=projects(), el=$('#projList'); const names=Object.keys(p);
+el.innerHTML=`<option value="">${names.length?'المشاريع المحفوظة…':'لا توجد مشاريع محفوظة'}</option>`+names.map(n=>`<option value="${esc(n)}" ${n===selName?'selected':''}>${esc(n)}</option>`).join('');
+}
+function loadState(ns){S=JSON.parse(JSON.stringify(ns));S.prices=Object.assign(defaults().prices,S.prices||{});sel=null;floatMode=null;bindFields();$('#secs').dataset.sig='';firstBuild=true;schedule()}
+$('#btnSave').onclick=()=>{const p=projects();const n=(S.name||'مشروع بدون اسم').trim();p[n]=JSON.parse(JSON.stringify(S));store.set(PKEY,p);fillProjects(n);toast('تم حفظ المشروع')};
+$('#btnNew').onclick=()=>{const d=defaults();d.prices=S.prices;d.name='مشروع جديد';loadState(d);fillProjects('')};
+$('#projList').onchange=e=>{const p=projects()[e.target.value];if(p)loadState(p)};
+function delHandler(){
+const n=$('#projList').value; if(!n){toast('اختر مشروعًا محفوظًا أولًا');return}
+const w=$('#delWrap');
+const reset=()=>{w.innerHTML='<button class="btn danger" id="btnDel">حذف</button>';$('#btnDel').onclick=delHandler};
+w.innerHTML=`<span class="confirm">حذف «${esc(n)}»؟ <button class="btn danger" id="yesDel">نعم</button><button class="btn" id="noDel">لا</button></span>`;
+$('#yesDel').onclick=()=>{const p=projects();delete p[n];store.set(PKEY,p);fillProjects('');reset();toast('تم الحذف')};
+$('#noDel').onclick=reset;
+}
+$('#btnDel').onclick=delHandler;
+const rethem=()=>{if(window.__m){build3D(window.__m)}};
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',rethem)}catch(e){}
+new MutationObserver(rethem).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+bindFields(); fillProjects(''); init3D(); renderAll(); resize3D();
+})();
+</script>
+</body>
+</html>
